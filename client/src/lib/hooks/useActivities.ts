@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import agent from "../api/agent";
 
-export const useActivities = () => {
+export const useActivities = (id?:string) => { //optional prop id, jer za activities ne treba id
 
     const queryClient = useQueryClient(); //Varijabla koju koristimo za manipulaciju cache-om
 
@@ -13,6 +13,16 @@ export const useActivities = () => {
             const response = await agent.get<Activity[]>('/activities') // Šalje GET zahtjev na API endpoint i tipizira odgovor kao Activity[]
             return response.data;   // Vraća samo podatke iz odgovora (response.data)
         }
+    });
+
+        const {isLoading: isLoadingActivity, data: activity } = useQuery<Activity>({
+        queryKey: ['activities', id],
+        queryFn: async () => {
+            const response = await agent.get<Activity>(`/activities/${id}`);
+            return response.data;
+        },
+        //usequery ce se pokrenuti svaki put kada se pokrene useActivities
+        enabled: !!id // !!id je bolean, i true je ako unesemo id i tada se ovo izvrsava
     });
 
 
@@ -30,7 +40,6 @@ export const useActivities = () => {
        const createActivity = useMutation({
         mutationFn: async (activity: Activity) => {
             const response = await agent.post('/activities', activity); //post request
-            console.log(response);
             return response.data;
         },
         onSuccess: async () => {
@@ -57,7 +66,9 @@ export const useActivities = () => {
         isPending,
         updateActivity,
         createActivity,
-        deleteActivity
+        deleteActivity,
+        activity,
+        isLoadingActivity
 
     }
 
