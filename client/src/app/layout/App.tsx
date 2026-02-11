@@ -1,72 +1,57 @@
 
-import { Box, Container, CssBaseline } from "@mui/material";
-import axios from "axios";
-import { useEffect, useState } from "react";
+import { Box, Container, CssBaseline, Typography } from "@mui/material";
+import { useState } from "react";
 import NavBar from "./NavBar";
 import ActivityDashboard from "../../features/activities/dashboard/ActivityDashboard";
+import { useActivities } from "../../lib/hooks/useActivities";
 
 function App() {
-  const [activities, setActivities] = useState<Activity[]>([]);
+
   const [selectedActivity, setSelectedActivity] = useState<Activity | undefined>(undefined);
-  const [editMode, setEditMode] = useState(false);
+  const [editMode, setEditMode] = useState(false); //da sacuvamo da li je form otvorena ili ne
 
+   const {activities, isPending} = useActivities();  
 
-  useEffect(() => {
-    axios.get<Activity[]>('https://localhost:5001/api/activities')
-      .then(response => setActivities(response.data))
-    return () => { }
-
-  }, [])
 
   const handleSelectActivity = (id: string) => {
-    setSelectedActivity(activities.find(x => x.id === id));
+    setSelectedActivity(activities!.find(x => x.id === id));  //pronadji activity (x) u bazi activities, koja ima isti id kao id sto je proslijedjen 
   }
 
-  const handleCancelSelectActivity = () => {
-    setSelectedActivity(undefined);
+  const handleCancelSelectActivity = () => {  //bez argumenata
+    setSelectedActivity(undefined); //postavlja selectedactivity na undefined
   }
 
-  const handleOpenForm = (id?: string) => {
-    if (id) handleSelectActivity(id);
-    else handleCancelSelectActivity();
-    setEditMode(true);
+  const handleOpenForm = (id?: string) => { //id na treba za editovanje, ne treba za create
+    if (id) handleSelectActivity(id); //ako smo ukucali id onda handleSelectActivity
+    else handleCancelSelectActivity(); //
+    setEditMode(true); //edit mode je true
   }
 
   const handleFormClose = () => {
     setEditMode(false);
   }
 
-  const handleSubmitForm = (activity: Activity) => {
-    if (activity.id) {
-      setActivities(activities.map(x => x.id === activity.id ? activity : x))
-    } else {
-      const newActivity = { ...activity, id: activities.length.toString() }
-      setSelectedActivity(newActivity);
-      setActivities([...activities, newActivity])
-    }
-    setEditMode(false);
-  }
-
-  const handleDelete = (id: string ) => {
-    setActivities(activities.filter(x => x.id !==id))
-  }
 
   return (
-    <Box sx={{ bgcolor: '#faf5f5ee' }}>
-      <CssBaseline />
-      <NavBar openForm={handleOpenForm} />
+    <Box sx={{ bgcolor: '#f1ececee', minHeight:'100vh'}}>
+      <CssBaseline />  {/* mice liniju ispred navbara*/}
+      <NavBar
+        openForm={handleOpenForm} />
       <Container maxWidth='xl' sx={{ margin: 3 }} >
-        <ActivityDashboard
-          activities={activities}
-          selectActivity={handleSelectActivity}
-          cancelSelectActivity={handleCancelSelectActivity}
-          selectedActivity={selectedActivity}
-          editMode={editMode}
-          openForm={handleOpenForm}
-          closeForm={handleFormClose}
-          submitForm={handleSubmitForm}
-          deleteActivity={handleDelete}
-        />
+        {!activities || isPending ? (<Typography>Loading...</Typography>) : (
+          <ActivityDashboard
+            activities={activities}   //activities iz dashboarda (ovo je properti koji saljemo dashbordu) == activities iz use state definicije u app
+            selectActivity={handleSelectActivity} //svi props koje saljemo dalje dashbordu
+            cancelSelectActivity={handleCancelSelectActivity} //svi props koje saljemo dalje dashbordu ....
+            selectedActivity={selectedActivity}
+            editMode={editMode}
+            openForm={handleOpenForm}
+            closeForm={handleFormClose}
+          />
+
+
+        )}
+
       </Container>
     </Box>
 

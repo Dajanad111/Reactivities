@@ -1,18 +1,22 @@
 import { Button, Card, CardActions, CardContent, CardMedia, Typography } from "@mui/material"
+import { useActivities } from "../../../../lib/hooks/useActivities";
 
 type Props = {
-    activity: Activity
-    cancelSelectActivity:() => void;
-    openForm: (id: string) => void
+    selectedActivity: Activity  //prisupamo jednoj activity
+    cancelSelectActivity:() => void; //za dugme cancel
+    openForm: (id: string) => void //za dugme edit, otvara novu formu
 }
 
 
-export default function ActivityDetail({activity,cancelSelectActivity, openForm}: Props) {
+export default function ActivityDetail({selectedActivity,cancelSelectActivity, openForm}: Props) {
+    const { activities } = useActivities();
+    const activity = activities?.find( x => x.id === selectedActivity.id); 
+    if (!activity) return <Typography>Loading...</Typography> 
   return (
     <Card sx={{borderRadius: 3}}>
         <CardMedia  
-        component='img'
-        src={`images/categoryImages/${activity.category}.jpg`} 
+        component='img'  //dodajemo sliku
+        src={`images/categoryImages/${activity.category}.jpg`}  //svakoj kategoriji ide druga slika 
         />
         <CardContent>
             <Typography variant="h5">{activity.title}</Typography>
@@ -21,7 +25,8 @@ export default function ActivityDetail({activity,cancelSelectActivity, openForm}
         </CardContent>
         <CardActions>
             <Button onClick={() => openForm(activity.id)} color="primary">Edit</Button>
-             <Button onClick={cancelSelectActivity} color="inherit">Cancel</Button>
+            <Button onClick={cancelSelectActivity} color="inherit">Cancel 	
+            </Button> 
         </CardActions>
     </Card>
   )

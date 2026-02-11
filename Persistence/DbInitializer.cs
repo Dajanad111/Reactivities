@@ -6,10 +6,11 @@ namespace Persistence;
 
 public class DbInitializer
 {
-public static async Task SeedData(AppDbContext context)
+public static async Task SeedData(AppDbContext context) //Javna, statička metoda koja asinhrono 
+//ubacuje početne podatke u bazu, i ne vraća nikakvu vrednost (samo signalizuje kada je završila).
     {
-        if (context.Activities.Any()) return;
-        var activities = new List<Activity>
+        if (context.Activities.Any()) return; //ako vec postoji nesto u bazi return
+        var activities = new List<Activity> //u suprotnom pravi novu listu u memoriji koja može da sadrži objekte tipa Activity
         {
            new() {
                 Title = "Past Activity 1",

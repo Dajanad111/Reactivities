@@ -15,6 +15,8 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 });
 
 builder.Services.AddCors();
+//kad koristis RegisterServicesFromAssemblyContaining 
+//dovoljno je da napises jedan handler i moci ces sve da koristis
 builder.Services.AddMediatR(x =>
 x.RegisterServicesFromAssemblyContaining<GetActivityList.Handler>());
 
