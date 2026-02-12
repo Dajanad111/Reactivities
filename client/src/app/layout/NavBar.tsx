@@ -15,14 +15,14 @@ export default function NavBar() {
                     <Toolbar sx={{display: 'flex', justifyContent: 'space-between'}}>
 
                         <Box>
-                            <MenuItem component={NavLink} to='/' sx={{display: 'flex', gap:2}}>
+                            <MenuItem component={NavLink} to='/' sx={{display: 'flex', gap:2}}>   {/* koristimo menuitem, navlink i to */}
                             <Group fontSize="large" />
-                            <Typography variant="h4" fontWeight={'bold'}> Reactivities</Typography>
+                            <Typography variant="h4" fontWeight={'bold'}> Reactivities</Typography>  {/* reactivities ce da vode na osnovni url tj '/' http://localhost:3000/  */}
                             </MenuItem>
                         </Box>
 
                         <Box sx={{display:'flex'}}>
-                            <MenuItemLink  to='/activities'> {/*MenuItemLink smo napravili sami*/}
+                            <MenuItemLink  to='/activities'> {/*MenuItemLink smo napravili sami u menuItemLink.tsx da bi mijenjao boju kad je kliknut*/}
                                   Activities
                                 </MenuItemLink>
                                 <MenuItemLink  to='/createActivity'>

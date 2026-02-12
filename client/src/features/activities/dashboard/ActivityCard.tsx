@@ -3,13 +3,17 @@ import { useActivities } from "../../../lib/hooks/useActivities";
 import { Link } from "react-router";
 
 
+
 type Props = {
     activity: Activity  //uzima jednu activity i od nje pravi card
+    onPreview: (activity: Activity) => void ;   
 }
 
-export default function ActivityCard({ activity }: Props) {
+export default function ActivityCard({ activity, onPreview }: Props) {
 
     const { deleteActivity } = useActivities();
+    
+
     return (
         <Card sx={{ borderRadius: 3 }}>
             <CardContent>
@@ -20,7 +24,9 @@ export default function ActivityCard({ activity }: Props) {
             </CardContent>
             <CardActions sx={{ display: 'flex', justifyContent: 'space-between', pb: 2 }}>
                 <Chip label={activity.category} variant="outlined" />
-                <Box display='flex' gap={3}>
+                <Box display='flex' gap={3}> 
+                    <Button onClick={() => onPreview(activity)} size="medium"   //onPreview(activity)  poziva setSelectedActivity i postavlja selectactivitu na ovu activity
+                        variant="contained">Preview</Button>
                     <Button component={Link} to={`/activities/${activity.id}`} size="medium" 
                         variant="contained">View</Button>
                     <Button

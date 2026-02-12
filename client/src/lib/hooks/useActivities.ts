@@ -7,15 +7,16 @@ export const useActivities = (id?:string) => { //optional prop id, jer za activi
     const queryClient = useQueryClient(); //Varijabla koju koristimo za manipulaciju cache-om
 
 
-    const { data: activities, isPending } = useQuery({ //usequery kada fetching data,// Dohvaća podatke o aktivnostima i status učitavanja
-        queryKey: ['activities'],  // Jedinstveni ključ za identifikaciju ovog upita u cache-u
+    const { data: activities, isPending } = useQuery<Activity[]>({ //usequery kada fetching data
+        //u {} pisemo sta cemo da dobijemo , dobijamo data i zovemo ga activities, i dobijamo state ispending
+        queryKey: ['activities'],  // Jedinstveni ključ za identifikaciju ovog upita u cache-u, [] jer je array
         queryFn: async () => {  // Funkcija koja dohvaća podatke sa API-ja
-            const response = await agent.get<Activity[]>('/activities') // Šalje GET zahtjev na API endpoint i tipizira odgovor kao Activity[]
+            const response = await agent.get<Activity[]>('/activities') // Šalje GET zahtjev na API endpoint i dobija odgovor kao Activity[]
             return response.data;   // Vraća samo podatke iz odgovora (response.data)
         }
     });
 
-        const {isLoading: isLoadingActivity, data: activity } = useQuery<Activity>({
+        const {isLoading: isLoadingActivity, data: activity } = useQuery<Activity>({   //Za samo jednu activity 
         queryKey: ['activities', id],
         queryFn: async () => {
             const response = await agent.get<Activity>(`/activities/${id}`);
@@ -26,32 +27,33 @@ export const useActivities = (id?:string) => { //optional prop id, jer za activi
     });
 
 
-    const updateActivity = useMutation({ //usemMutation kada update date
-        mutationFn: async (activity: Activity) => {
-            await agent.put('/activities', activity);  //  PUT zahtjev na API
+    const updateActivity = useMutation({ // useMutation kada MODIFIKUJEMO podatke (POST, PUT, DELETE), updateActivity je metod
+         // mutationFn - funkcija koja izvršava API poziv za izmenu podataka
+        mutationFn: async (activity: Activity) => {  // activity: Activity - parametar koji prima funkcija (Activity objekat koji želimo da ažuriramo)
+            await agent.put('/activities', activity);    // Šalje PUT zahtjev na API endpoint '/activities', PUT metoda se koristi za ažuriranje postojećih podataka
         },
-        onSuccess: async () => { //Ovo je funkcija koja se pokreće NAKON što je mutacija uspješna
-            await queryClient.invalidateQueries({ // await: Čekamo dok se invalidateQueries ne završi prije nego što nastavimo // queryClient: Instanca React Query klijenta koja upravlja svim upitima i cache-om // invalidateQueries: Metoda koja označava određene upite kao "zastarjele" i pokreće njihovo ponovno dohvaćanje
-                queryKey: ['activities'] // queryKey: Niz koji identificira koji upiti trebaju biti invalidirani// ['activities']: Ključ koji odgovara useQuery(['activities']) upitu // Ovo znači: "Pronađi sve upite sa ključem 'activities' i osvježi ih"
+        onSuccess: async () => {  // onSuccess - callback funkcija koja se izvršava NAKON uspješne mutacije
+            await queryClient.invalidateQueries({  // briše cache za određeni query, Ovo će automatski triggerovati ponovno učitavanje podataka
+                queryKey: ['activities']  //Brišemo cache za query sa ključem ['activities']
             })
         }
     });
 
        const createActivity = useMutation({
         mutationFn: async (activity: Activity) => {
-            const response = await agent.post('/activities', activity); //post request
+            const response = await agent.post('/activities', activity); //post request za kreiranje
             return response.data;
         },
         onSuccess: async () => {
             await queryClient.invalidateQueries({
-                queryKey: ['activities']
+                queryKey: ['activities'] // Osveži listu nakon kreiranja
             })
         }
     });
 
      const deleteActivity = useMutation({
-        mutationFn: async (id: string) => {
-            await agent.delete(`/activities/${id}`);
+        mutationFn: async (id: string) => { // Prima SAMO ID (ne ceo objekat)
+            await agent.delete(`/activities/${id}`); // DELETE = brisanje aktivnosti i ne vraca nista
         },
         onSuccess: async () => {
             await queryClient.invalidateQueries({
@@ -69,7 +71,6 @@ export const useActivities = (id?:string) => { //optional prop id, jer za activi
         deleteActivity,
         activity,
         isLoadingActivity
-
     }
 
 

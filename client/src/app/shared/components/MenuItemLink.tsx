@@ -2,7 +2,7 @@ import { MenuItem } from "@mui/material";
 import type { ReactNode } from "react";
 import { NavLink } from "react-router";
 //pravimo menuitem koji ima svoj still i funkciju da mijenja boju kad je kliknut
-//svaki menuitem ima component i to propreties pa ih odje definisemo
+//svaki menuitem ima component i 'to' propreties pa ih odje definisemo
 export default function MenuItemLink({children, to}: {children: ReactNode, to: string}) {
     return (
         <MenuItem
@@ -18,7 +18,7 @@ export default function MenuItemLink({children, to}: {children: ReactNode, to: s
                 },
               }}
         >
-            {children} {/*ovdje ce biti children*/}
+            {children} {/*ovdje ce biti children tipa typography card itd*/}
         </MenuItem>
     )
 }

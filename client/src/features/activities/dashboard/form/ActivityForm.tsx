@@ -6,29 +6,31 @@ import { useNavigate, useParams } from "react-router";
 
 
 export default function ActivityForm() {
-    const {id}=useParams();
+    const {id}=useParams(); //  React Router hook koji izvlači parametre iz URL-a
     const {updateActivity, createActivity, activity, isLoadingActivity} = useActivities(id); //dodamo hooks iz useActivities
-    const navigate = useNavigate();
+    const navigate = useNavigate();  //za prelazak na drugu stranicu
+
 //standardna praksa submita forme i formdata
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {  //react event za submiting forme
-        event.preventDefault(); //preventuje npr reload
+        event.preventDefault(); //SPREČAVA default ponašanje forme (refresh stranice)
         const formData = new FormData(event.currentTarget);  //Formdata je js class,FormData je specijalan objekat, a mi ga konvertujemo u običan JavaScript objekat
-        const data: { [key: string]: FormDataEntryValue } = {}  // key je name iz polja forme , ali vrednost mora biti FormDataEntryValue
-        formData.forEach((value, key) => {  //Prolazi kroz sve form podatke i dodaje ih u objekat
-            data[key] = value;
+         // Kreiramo PRAZAN data objekat za čuvanje podataka
+        const data: { [key: string]: FormDataEntryValue } = {}  // key je name iz polja forme (npr. 'title', 'description') , ali vrednost mora biti FormDataEntryValue(string, File, ili null)
+        formData.forEach((value, key) => {  //Prolazimo kroz SVAKI par (ključ, vrednost) u FormData , value = vrijdnost polja (npr. 'Activity 5'),  key = name atribut polja (npr. 'title')
+            data[key] = value; //  Dodajemo par (ključ, vrednost) u naš objekat
         });
+    
 
-       if (activity) {
-            data.id = activity.id;
-            await updateActivity.mutateAsync(data as unknown as Activity); 
-            //poziva useMutation hook iz useActivities
+       if (activity) { // AKO POSTOJI aktivnost → RADIMO UPDATE (ažuriranje)
+            data.id = activity.id; //  Dodajemo ID u podatke jer server mora znati KOJU aktivnost ažuriramo
+            await updateActivity.mutateAsync(data as unknown as Activity);  //poziva useMutation hook iz useActivities
             //mutateAsync Pokreće ažuriranje i čeka rezultat
-              navigate(`/activities/${activity.id}`)
+              navigate(`/activities/${activity.id}`) // Preusmerava korisnika na stranicu ažurirane aktivnosti
             
-        } else { //u slucaju da se id ne poklapa znaci da se pravi nova activity
-         createActivity.mutate(data as unknown as Activity, {
-            onSuccess: (id)=> {
-                navigate(`/activities/${id}`)
+        } else { // AKO NE POSTOJI aktivnost → RADIMO CREATE (kreiranje nove)
+         createActivity.mutate(data as unknown as Activity, {  //data' je tipa { [key: string]: FormDataEntryValue }  Ali naša mutacija očekuje tip 'Activity'
+            onSuccess: (id)=> {  // callback koji se poziva NAKON uspešnog kreiranja,  server vraća ID nove aktivnosti (ako je implementirano)
+                navigate(`/activities/${id}`)  // Preusmjerava na stranicu NOVE aktivnosti
             }
          });
            
@@ -57,7 +59,7 @@ export default function ActivityForm() {
                     type="submit"
                      color='success' 
                      variant="contained"
-                     disabled= {updateActivity.isPending || createActivity.isPending}
+                     disabled= {updateActivity.isPending || createActivity.isPending} //da ne moze da se klikne dok se updatuje 
                      >Submit</Button>
                 </Box>
             </Box>

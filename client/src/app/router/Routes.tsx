@@ -9,13 +9,13 @@ import ActivityDetail from "../../features/activities/dashboard/details/Activity
 export const router = createBrowserRouter([
 
     {
-        path: '/',
-        element: <App />,
-        children: [
+        path: '/',  //  URL putanja: https://example.com/
+        element: <App />,    //  Komponenta koja se renderuje na ovoj putanji
+        children: [  // Ugnježdene rute (nested routes)
             { path: '', element: <HomePage /> }, // na http://localhost:3000/ ce biti homepage
             { path: 'activities', element: <ActivityDashboard /> }, //na http://localhost:3000/activites ce bitiActivityDashboard
             { path: 'createActivity', element: <ActivityForm key='create'  /> }, //dodajmeo key da bi mogli da je otvorimo ako smo vec u edit formi
-            { path: 'manage/:id', element: <ActivityForm  /> },
+            { path: 'manage/:id', element: <ActivityForm  /> }, //za editovanje forme
              { path: 'activities/:id', element: <ActivityDetail /> }, //activities/:id nam daje jednu activity
         ]
            

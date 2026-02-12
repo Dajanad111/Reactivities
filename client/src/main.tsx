@@ -15,11 +15,11 @@ import { router } from './app/router/Routes.tsx';
 
 const queryClient = new QueryClient();
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <QueryClientProvider client={queryClient}>
-        <ReactQueryDevtools />
-      <RouterProvider router={router} />
+createRoot(document.getElementById('root')!).render( // Kreira React root i renderuje aplikaciju u HTML element sa id="root"
+  <StrictMode>  {/* React mod za otkrivanje potencijalnih bugova u development-u */}
+    <QueryClientProvider client={queryClient}>   {/* Omogućava React Query funkcionalnost u celoj aplikaciji */}
+        <ReactQueryDevtools />   {/* Developer alat za debugovanje React Query (cache, queries, mutations) */}
+      <RouterProvider router={router} />  {/* Pokreće React Router i omogućava navigaciju između stranica , router pokazuje na app*/}
     </QueryClientProvider>
 
   </StrictMode>,
