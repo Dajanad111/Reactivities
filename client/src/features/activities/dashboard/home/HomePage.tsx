@@ -1,9 +1,13 @@
 import { Group } from "@mui/icons-material";
-import { Box, Paper,Button, Typography } from "@mui/material";
+import { Box,Button, Typography } from "@mui/material";
 import { Link } from "react-router";
+import InteractiveBackground from "./InteractiveBackground";
 
 export default function HomePage() {
-  return (<Paper className="home"
+  return (
+  <InteractiveBackground>
+  
+  <Box className="home"
       sx={{
         color: 'white',
         display: 'flex',
@@ -13,9 +17,9 @@ export default function HomePage() {
         alignContent: 'center',
         justifyContent: 'center',
         height: '100vh',
-        backgroundImage: 'linear-gradient(135deg, rgb(24, 42, 115) 0%,rgb(33, 138, 174) 69%,rgb(32, 167, 172) 89%)'
       }}
     >
+      
       <Box sx={{ display: 'flex', alignItems: 'center', alignContent: 'center', color: 'white', gap: 3 }}>
         <Group sx={{ height: 110, width: 110 }} />
         <Typography variant="h1" fontWeight='bold'>
@@ -30,7 +34,8 @@ export default function HomePage() {
         sx={{height: 80, borderRadius: 4, fontSize: '1.5rem'}}>
         Take me to the activities!
       </Button>
-    </Paper>
+    </Box>
+    </InteractiveBackground>
   )
         
 }

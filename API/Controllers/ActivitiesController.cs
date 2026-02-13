@@ -11,7 +11,7 @@ namespace API.Controllers;
 
 public class ActivitiesController : BaseApiController
 {
-    [HttpGet]
+    [HttpGet ("Activities")]
     public async Task<ActionResult<List<Activity>>> GetActivities() //vraca listu activity, ne unosimo nista
     {
         return await Mediator.Send(new GetActivityList.Query());

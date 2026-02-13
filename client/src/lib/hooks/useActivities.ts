@@ -10,7 +10,8 @@ export const useActivities = (id?:string) => { //optional prop id, jer za activi
     const { data: activities, isPending } = useQuery<Activity[]>({ //usequery kada fetching data
         //u {} pisemo sta cemo da dobijemo , dobijamo data i zovemo ga activities, i dobijamo state ispending
         queryKey: ['activities'],  // Jedinstveni ključ za identifikaciju ovog upita u cache-u, [] jer je array
-        queryFn: async () => {  // Funkcija koja dohvaća podatke sa API-ja
+        queryFn: async () => {  
+        // Funkcija koja dohvaća podatke sa API-ja
             const response = await agent.get<Activity[]>('/activities') // Šalje GET zahtjev na API endpoint i dobija odgovor kao Activity[]
             return response.data;   // Vraća samo podatke iz odgovora (response.data)
         }
