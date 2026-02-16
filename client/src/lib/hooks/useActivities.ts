@@ -1,11 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import agent from "../api/agent";
+import { useLocation } from "react-router";
 
 export const useActivities = (id?:string) => { //optional prop id, jer za activities ne treba id
 
     const queryClient = useQueryClient(); //Varijabla koju koristimo za manipulaciju cache-om
 
+    const location= useLocation();
 
     const { data: activities, isPending } = useQuery<Activity[]>({ //usequery kada fetching data
         //u {} pisemo sta cemo da dobijemo , dobijamo data i zovemo ga activities, i dobijamo state ispending
@@ -14,7 +16,8 @@ export const useActivities = (id?:string) => { //optional prop id, jer za activi
         // Funkcija koja dohvaća podatke sa API-ja
             const response = await agent.get<Activity[]>('/activities') // Šalje GET zahtjev na API endpoint i dobija odgovor kao Activity[]
             return response.data;   // Vraća samo podatke iz odgovora (response.data)
-        }
+        },
+        enabled: !id  && location.pathname ==='/activities' // za pokazivanje loadinga
     });
 
         const {isLoading: isLoadingActivity, data: activity } = useQuery<Activity>({   //Za samo jednu activity 

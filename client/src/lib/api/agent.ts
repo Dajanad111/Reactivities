@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { store } from '../stores/store';
 
 //Kreira funkciju koja čeka određeni broj milisekundi
 const sleep = (delay: number) => { //delay: number - parametar koji određuje koliko milisekundi da čeka
@@ -10,6 +11,10 @@ const sleep = (delay: number) => { //delay: number - parametar koji određuje ko
 const agent = axios.create({ //kreira novu axios instancu sa podešenim konfiguracijama
     baseURL: import.meta.env.VITE_API_URL //postavlja osnovni URL za sve API pozive iz .env.developmenta
 });
+agent.interceptors.request.use(config => {
+    store.uiStore.isBusy();
+    return config;
+})
 
  // dodaje interceptor koji hvata sve odgovore od servera 
  agent.interceptors.response.use(async response => { //async response => - asinhrona funkcija koja prima odgovor od servera
@@ -19,6 +24,8 @@ const agent = axios.create({ //kreira novu axios instancu sa podešenim konfigur
     } catch (error) { //hvata eventualne greške tokom čekanja
         console.log(error); //loguje grešku u konzolu
         return Promise.reject(error); //odbacuje Promise sa greškom . Promise moze biti resolve i reject
+    } finally {
+        store.uiStore.isIdle();
     }
 });
 
