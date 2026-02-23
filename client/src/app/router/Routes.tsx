@@ -1,10 +1,13 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, Navigate } from "react-router";
 import App from "../layout/App";
 import HomePage from "../../features/activities/dashboard/home/HomePage";
 import ActivityDashboard from "../../features/activities/dashboard/ActivityDashboard";
 import ActivityForm from "../../features/activities/dashboard/form/ActivityForm";
 import ActivityDetailPage from "../../features/activities/dashboard/details/ActivityDetailPage";
 import Counter from "../../features/activities/dashboard/counter/Counter";
+import TestErrors from "../../features/activities/dashboard/errors/TestErrors";
+import NotFound from "../../features/activities/dashboard/errors/NotFound";
+import ServerError from "../../features/activities/dashboard/errors/ServerError";
 
 
 export const router = createBrowserRouter([
@@ -19,6 +22,10 @@ export const router = createBrowserRouter([
             { path: 'manage/:id', element: <ActivityForm /> }, //za editovanje forme
             { path: 'activities/:id', element: <ActivityDetailPage /> }, //activities/:id nam daje jednu activity
             { path: 'counter', element: <Counter /> },
+            { path: 'errors', element: <TestErrors /> },
+            { path: 'not-found', element: <NotFound /> },
+            { path: 'server-error', element: <ServerError /> },
+            { path: '*', element: <Navigate replace to= '/not-found' /> },
         ]
 
     }
