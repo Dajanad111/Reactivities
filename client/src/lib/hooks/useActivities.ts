@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import agent from "../api/agent";
 import { useLocation } from "react-router";
+import type { Activity } from "../types";
 
 export const useActivities = (id?:string) => { //optional prop id, jer za activities ne treba id
 
@@ -34,7 +35,7 @@ export const useActivities = (id?:string) => { //optional prop id, jer za activi
     const updateActivity = useMutation({ // useMutation kada MODIFIKUJEMO podatke (POST, PUT, DELETE), updateActivity je metod
          // mutationFn - funkcija koja izvršava API poziv za izmenu podataka
         mutationFn: async (activity: Activity) => {  // activity: Activity - parametar koji prima funkcija (Activity objekat koji želimo da ažuriramo)
-            await agent.put('/activities', activity);    // Šalje PUT zahtjev na API endpoint '/activities', PUT metoda se koristi za ažuriranje postojećih podataka
+            await agent.put('/activities/${activity.id}', activity);    // Šalje PUT zahtjev na API endpoint '/activities', PUT metoda se koristi za ažuriranje postojećih podataka
         },
         onSuccess: async () => {  // onSuccess - callback funkcija koja se izvršava NAKON uspješne mutacije
             await queryClient.invalidateQueries({  // briše cache za određeni query, Ovo će automatski triggerovati ponovno učitavanje podataka

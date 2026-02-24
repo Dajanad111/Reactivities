@@ -13,11 +13,13 @@ import { RouterProvider } from 'react-router';
 import { router } from './app/router/Routes.tsx';
 import { store, StoreContext } from './lib/stores/store.ts';
 import { ToastContainer } from 'react-toastify';
-
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns} from '@mui/x-date-pickers/AdapterDateFns';
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById('root')!).render( // Kreira React root i renderuje aplikaciju u HTML element sa id="root"
   <StrictMode>  {/* React mod za otkrivanje potencijalnih bugova u development-u */}
+  <LocalizationProvider dateAdapter={AdapterDateFns}>
     <StoreContext.Provider value={store}>
       <QueryClientProvider client={queryClient}>   {/* Omogućava React Query funkcionalnost u celoj aplikaciji */}
         <ReactQueryDevtools />   {/* Developer alat za debugovanje React Query (cache, queries, mutations) */}
@@ -25,7 +27,7 @@ createRoot(document.getElementById('root')!).render( // Kreira React root i rend
         <RouterProvider router={router} />  {/* Pokreće React Router i omogućava navigaciju između stranica , router pokazuje na app*/}
       </QueryClientProvider>
     </StoreContext.Provider>
-
+    </LocalizationProvider>
 
   </StrictMode>,
 )
