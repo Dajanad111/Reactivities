@@ -4,6 +4,7 @@ using Application.Activities.DTOs;
 using Application.Activities.Queries;
 using Domain;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,12 +13,14 @@ namespace API.Controllers;
 
 public class ActivitiesController : BaseApiController
 {
+    
     [HttpGet]
     public async Task<ActionResult<List<Activity>>> GetActivities() //vraca listu activity, ne unosimo nista
     {
         return await Mediator.Send(new GetActivityList.Query());
     }
 
+   
     [HttpGet("{id}")]
     public async Task<ActionResult<Activity>> GetActivityDetail(string id) //vraca activity a unosimo id
     {

@@ -1,14 +1,29 @@
 using System;
 using System.Net.NetworkInformation;
 using Domain;
-
+using Microsoft.AspNetCore.Identity;
 namespace Persistence;
 
 public class DbInitializer
 {
-public static async Task SeedData(AppDbContext context) //Javna, statička metoda koja asinhrono 
-//ubacuje početne podatke u bazu, i ne vraća nikakvu vrednost (samo signalizuje kada je završila).
+public static async Task SeedData(AppDbContext context, UserManager<User> userManager)
     {
+        if (!userManager.Users.Any())  //usserdobijamo iz user manager
+        {
+            var users = new List<User>
+                {
+                    new() {DisplayName = "Bob", UserName = "bob@test.com", Email = "bob@test.com"},
+                    new() {DisplayName = "Tom", UserName = "tom@test.com", Email = "tom@test.com"},
+                    new() {DisplayName = "Jane", UserName = "jane@test.com", Email = "jane@test.com"},
+                };
+
+            foreach (var user in users)
+            {
+                await userManager.CreateAsync(user, "Pa$$w0rd");
+            }
+        }
+
+
         if (context.Activities.Any()) return; //ako vec postoji nesto u bazi return
         var activities = new List<Activity> //u suprotnom pravi novu listu u memoriji koja može da sadrži objekte tipa Activity
         {
