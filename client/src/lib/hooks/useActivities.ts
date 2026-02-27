@@ -3,22 +3,23 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import agent from "../api/agent";
 import { useLocation } from "react-router";
 import type { Activity } from "../types";
+import { useAccount } from "./useAccount";
 
 export const useActivities = (id?:string) => { //optional prop id, jer za activities ne treba id
 
     const queryClient = useQueryClient(); //Varijabla koju koristimo za manipulaciju cache-om
-
+const{currentUser} = useAccount(); //uvodimo current usera da se ne bi pristupalo activities ako ga nema
     const location= useLocation();
 
-    const { data: activities, isPending } = useQuery<Activity[]>({ //usequery kada fetching data
+    const { data: activities, isLoading } = useQuery<Activity[]>({ //usequery kada fetching data
         //u {} pisemo sta cemo da dobijemo , dobijamo data i zovemo ga activities, i dobijamo state ispending
-        queryKey: ['activities'],  // Jedinstveni ključ za identifikaciju ovog upita u cache-u, [] jer je array
+        queryKey: ['activities'],  // Jedinstveni ključ za identifikaciju ovog upita u cache-u
         queryFn: async () => {  
         // Funkcija koja dohvaća podatke sa API-ja
             const response = await agent.get<Activity[]>('/activities') // Šalje GET zahtjev na API endpoint i dobija odgovor kao Activity[]
             return response.data;   // Vraća samo podatke iz odgovora (response.data)
         },
-        enabled: !id  && location.pathname ==='/activities' // za pokazivanje loadinga
+        enabled: !id  && location.pathname ==='/activities'  && !!currentUser 
     });
 
         const {isLoading: isLoadingActivity, data: activity } = useQuery<Activity>({   //Za samo jednu activity 
@@ -28,7 +29,7 @@ export const useActivities = (id?:string) => { //optional prop id, jer za activi
             return response.data;
         },
         //usequery ce se pokrenuti svaki put kada se pokrene useActivities
-        enabled: !!id // !!id je bolean, i true je ako unesemo id i tada se ovo izvrsava
+        enabled: !!id && !!currentUser // !!id je bolean, i true tj ako imamoo id tada se ovo izvrsava
     });
 
 
@@ -70,7 +71,7 @@ export const useActivities = (id?:string) => { //optional prop id, jer za activi
 
     return {
         activities,
-        isPending,
+        isLoading,
         updateActivity,
         createActivity,
         deleteActivity,

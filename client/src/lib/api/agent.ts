@@ -11,7 +11,8 @@ const sleep = (delay: number) => { //delay: number - parametar koji određuje ko
 }
 
 const agent = axios.create({ //kreira novu axios instancu sa podešenim konfiguracijama
-    baseURL: import.meta.env.VITE_API_URL //postavlja osnovni URL za sve API pozive iz .env.developmenta
+    baseURL: import.meta.env.VITE_API_URL, //postavlja osnovni URL za sve API pozive iz .env.developmenta
+     withCredentials: true //da bi se ulogovali 
 });
 agent.interceptors.request.use(config => {//  Pokaži loading spinner (korisnik vidi da se nešto dešava)
     store.uiStore.isBusy(); 

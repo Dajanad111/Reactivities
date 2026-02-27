@@ -4,10 +4,13 @@ import { NavLink } from "react-router";
 import MenuItemLink from "../shared/components/MenuItemLink";
 import { useStore } from "../../lib/hooks/useStore";
 import { Observer } from "mobx-react-lite";
+import { useAccount } from "../../lib/hooks/useAccount";
+import UserMenu from "./UserMenu";
 
 
 export default function NavBar() {
    const {uiStore} = useStore();
+   const {currentUser} = useAccount(); //da bi mogli da provjerimo da li imamo trenutnog ussera i sta da prikazemo ako imamo 
 
     return (
         <Box sx={{ flexGrow: 1 }}>
@@ -30,9 +33,6 @@ export default function NavBar() {
                             <MenuItemLink  to='/activities'> {/*MenuItemLink smo napravili sami u menuItemLink.tsx da bi mijenjao boju kad je kliknut*/}
                                   Activities
                                 </MenuItemLink>
-                                <MenuItemLink  to='/createActivity'>
-                                 Create Activity
-                                </MenuItemLink>
                                  <MenuItemLink  to='/counter'>
                                  Counter
                                 </MenuItemLink> 
@@ -41,11 +41,17 @@ export default function NavBar() {
                                 </MenuItemLink>
                                
                         </Box>
+                          <Box display='flex' alignItems='center'>
+                            {currentUser ? (
+                              <UserMenu />
+                            ) : (
+                                 <>
+                                    <MenuItemLink to='/login'>Login</MenuItemLink>
+                                    <MenuItemLink to='/register'>Register</MenuItemLink>
+                                </>
+                            )}
+                        </Box>
 
-                         <MenuItem sx={{
-                                fontSize: '1.2rem', textTransform: 'uppercase', fontWeight: 'bold'}} >
-                            User menu
-                        </MenuItem>
 
                     </Toolbar>
                 </Container>
