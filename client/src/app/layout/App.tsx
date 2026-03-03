@@ -2,7 +2,7 @@
 import { Box, Container, CssBaseline } from "@mui/material";
 import NavBar from "./NavBar";
 
-import { Outlet, useLocation } from "react-router";
+import { Outlet, ScrollRestoration, useLocation } from "react-router";
 import HomePage from "../../features/activities/dashboard/home/HomePage";
 
 
@@ -11,6 +11,7 @@ function App() {
 
   return (
     <Box sx={{ bgcolor: '#f1ececee', minHeight:'100vh'}}>
+      <ScrollRestoration/>
       <CssBaseline />  {/* mice liniju ispred navbara*/}
 
       {location.pathname === '/' ? <HomePage /> : (  // ako je path '/' prikazi pocetnu stranicu bez navbara

@@ -19,7 +19,18 @@ const{currentUser} = useAccount(); //uvodimo current usera da se ne bi pristupal
             const response = await agent.get<Activity[]>('/activities') // Šalje GET zahtjev na API endpoint i dobija odgovor kao Activity[]
             return response.data;   // Vraća samo podatke iz odgovora (response.data)
         },
-        enabled: !id  && location.pathname ==='/activities'  && !!currentUser 
+        enabled: !id  && location.pathname ==='/activities'  && !!currentUser, //pristupamo kada nema id (Nije posebna aktivnosti) , i kada imamo ulogovanog usera 
+        
+        select: data => {
+            return data.map(activity => { //Prolazi kroz svaku aktivnost iz liste
+                return {
+                    ...activity, //Kopira sva postojeća polja aktivnosti
+                     isHost: currentUser?.id === activity.hostId ,  //Proverava da li je trenutni korisnik domaćin aktivnosti Vraća true/false za prikaz dugmadi "Edit/Delete" samo hostu
+                    isGoing: activity.attendees.some(x => x.id === currentUser?.id) //Proverava da li je korisnik među učesnicima
+                }
+            })
+        }  
+        
     });
 
         const {isLoading: isLoadingActivity, data: activity } = useQuery<Activity>({   //Za samo jednu activity 
@@ -29,7 +40,14 @@ const{currentUser} = useAccount(); //uvodimo current usera da se ne bi pristupal
             return response.data;
         },
         //usequery ce se pokrenuti svaki put kada se pokrene useActivities
-        enabled: !!id && !!currentUser // !!id je bolean, i true tj ako imamoo id tada se ovo izvrsava
+        enabled: !!id && !!currentUser , // !!id je bolean, i true tj ako imamoo id tada se ovo izvrsava
+         select: data => {
+            return {
+                ...data,
+                isHost: currentUser?.id === data.hostId,
+                isGoing: data.attendees.some(x => x.id === currentUser?.id)
+            }
+        }
     });
 
 
@@ -68,6 +86,57 @@ const{currentUser} = useAccount(); //uvodimo current usera da se ne bi pristupal
         }
     });
 
+    const updateAttendance = useMutation({
+        mutationFn: async (id: string) => {
+            await agent.post(`/activities/${id}/attend`);
+        },
+        // onSuccess: async () => {         
+        //     await queryClient.invalidateQueries({
+        //         queryKey: ['activities', id]
+        //     })
+
+        //ovo je radilo ali zbog sporog ucitavanja radimo drugacije da kada kliknemo npc cancel attendance, da se nasa ikona odmah ukloni
+        //OPTIMISTIC UPDATING
+        onMutate: async (activityId: string) => {
+            await queryClient.cancelQueries({ queryKey: ['activities', activityId] }); // Otkaži sve trenutne fetch-ove za ovu aktivnost
+
+            const prevActivity = queryClient.getQueryData<Activity>(['activities', activityId]); // Sačuvaj trenutno stanje iz cache-a (za rollback)
+
+            queryClient.setQueryData<Activity>(['activities', activityId], oldActivity => {  //pravimo oldActivity
+                if (!oldActivity || !currentUser) {  //nista ne radimo ako nemamo usera ili activity
+                    return oldActivity; 
+                }
+
+                const isHost = oldActivity.hostId === currentUser.id;  
+                const isAttending = oldActivity.attendees.some(x => x.id === currentUser.id);
+
+                return {
+                    ...oldActivity,//vracamo starua ctivity
+                    isCancelled: isHost ? !oldActivity.isCancelled : oldActivity.isCancelled, // Ako je host → promijeni cancel status
+                    attendees: isAttending //provjeravamo da li je attending
+                        ? isHost   //i da li je i host
+                            ? oldActivity.attendees  //ako je host nista ne radimo 
+                            : oldActivity.attendees.filter(x => x.id !== currentUser.id) //ako nije host a jeste attending micemo ga sa spiska
+                        : [...oldActivity.attendees, {  //dodajmo novog attendee u listu posto nijesmo vec attendee
+                            id: currentUser.id, //pravimo novog attendee
+                            displayName: currentUser.displayName,
+                            imageUrl: currentUser.imageURL,
+                        }],
+                };
+            });
+
+            return { prevActivity }; //Vrati prethodno stanje da ga iskoristis ako se desi greska
+        },
+        onError: (error, activityId, context) => {
+            console.error('Error updating attendance:', error);
+
+            if (context?.prevActivity) {  // Vrati staro stanje iz context-a ako je došlo do greške
+                queryClient.setQueryData(['activities', activityId], context.prevActivity);
+            }
+        } 
+})
+
+
 
     return {
         activities,
@@ -76,7 +145,8 @@ const{currentUser} = useAccount(); //uvodimo current usera da se ne bi pristupal
         createActivity,
         deleteActivity,
         activity,
-        isLoadingActivity
+        isLoadingActivity,
+        updateAttendance
     }
 
 
