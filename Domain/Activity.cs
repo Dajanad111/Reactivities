@@ -17,4 +17,8 @@ public bool IsCancelled { get; set; }
   public required string Venue{ get; set; }
   public double Latitude { get; set; }
   public double Longitude { get; set; }
+
+  // navigation properties
+    public ICollection<ActivityAttendee> Attendees { get; set; } = [];  //activity moze imati vise attendees
+        //pravimo u appdbcontext pravilo kako da se povezu 
 }

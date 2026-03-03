@@ -9,4 +9,9 @@ public string? DisplayName { get; set; }
     public string? Bio { get; set; }
     public string? ImageUrl { get; set; }
 
+     // navigation properties
+    public ICollection<ActivityAttendee> Activities { get; set; } = []; //user moze biti prijavljen na vise activity
+
+    //pravimo u appdbcontext pravilo kako da se povezu 
+
 }
