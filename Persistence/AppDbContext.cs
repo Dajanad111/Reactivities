@@ -9,6 +9,8 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
     public required DbSet<Activity> Activities { get; set; } //pravi tabelu activities koja ima puno activity
     public required DbSet<ActivityAttendee> ActivityAttendees { get; set; } //pravi tabelu activityattendees koja sadrzi ActivityAttendee
 
+    public required DbSet<Photo> Photos { get; set; }
+    
     protected override void OnModelCreating(ModelBuilder builder) //govori Entity Framework Core-u kako da kreira i poveže tabele u bazi.
     {
         base.OnModelCreating(builder);

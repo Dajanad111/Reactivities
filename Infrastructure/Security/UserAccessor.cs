@@ -3,6 +3,7 @@ using System.Security.Claims;
 using Application.Interfaces;
 using Domain;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Persistence;
 
 namespace Infrastructure.Security;
@@ -24,6 +25,15 @@ public class UserAccessor (IHttpContextAccessor httpContextAccessor, AppDbContex
        return await dbContext.Users.FindAsync(GetUserId()) //Entity Framework metoda koja traži korisnika po primarnom ključu
        //Prvo provjerava lokalni cache (tracking), pa tek onda bazu.
                    ?? throw new UnauthorizedAccessException("No user is logged in"); //Ako korisnik s tim ID-jem ne postoji u bazi (npr. obrisan je, a token je još validan), baca se UnauthorizedAccessException.
+    }
+
+    public async Task<User> GetUserWithPhotosAsync()  //za ucitavanje svihg slika 
+    {
+        var userId = GetUserId();
+        return await dbContext.Users
+        .Include(x => x.Photos)   //dodajemo i slike
+        .FirstOrDefaultAsync(x => x.Id == userId)
+          ?? throw new UnauthorizedAccessException("No user is logged in"); 
     }
 }
 

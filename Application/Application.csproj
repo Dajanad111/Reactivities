@@ -10,6 +10,10 @@
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\Persistence\Persistence.csproj" />
   </ItemGroup>
+  
+   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Activities\DTO\" />
@@ -17,7 +21,9 @@
     <Folder Include="Activities\Validators\" />
     <Folder Include="Interfaces\" />
     <Folder Include="Profiles\" />
+    <Folder Include="Profiles\Commands\" />
     <Folder Include="Profiles\DTOs\" />
+    <Folder Include="Profiles\Queries\" />
   </ItemGroup>
 
   <ItemGroup>
