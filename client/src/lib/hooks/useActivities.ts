@@ -23,10 +23,12 @@ const{currentUser} = useAccount(); //uvodimo current usera da se ne bi pristupal
         
         select: data => {
             return data.map(activity => { //Prolazi kroz svaku aktivnost iz liste
+                const host = activity.attendees.find(x => x.id ===activity.hostId)
                 return {
                     ...activity, //Kopira sva postojeća polja aktivnosti
                      isHost: currentUser?.id === activity.hostId ,  //Proverava da li je trenutni korisnik domaćin aktivnosti Vraća true/false za prikaz dugmadi "Edit/Delete" samo hostu
-                    isGoing: activity.attendees.some(x => x.id === currentUser?.id) //Proverava da li je korisnik među učesnicima
+                    isGoing: activity.attendees.some(x => x.id === currentUser?.id), //Proverava da li je korisnik među učesnicima
+                    hostImageUrl: host?.imageUrl
                 }
             })
         }  
@@ -42,10 +44,12 @@ const{currentUser} = useAccount(); //uvodimo current usera da se ne bi pristupal
         //usequery ce se pokrenuti svaki put kada se pokrene useActivities
         enabled: !!id && !!currentUser , // !!id je bolean, i true tj ako imamoo id tada se ovo izvrsava
          select: data => {
+            const host = data.attendees.find(x => x.id ==data.hostId)
             return {
                 ...data,
                 isHost: currentUser?.id === data.hostId,
-                isGoing: data.attendees.some(x => x.id === currentUser?.id)
+                isGoing: data.attendees.some(x => x.id === currentUser?.id),
+                 hostImageUrl: host?.imageUrl
             }
         }
     });
@@ -120,7 +124,7 @@ const{currentUser} = useAccount(); //uvodimo current usera da se ne bi pristupal
                         : [...oldActivity.attendees, {  //dodajmo novog attendee u listu posto nijesmo vec attendee
                             id: currentUser.id, //pravimo novog attendee
                             displayName: currentUser.displayName,
-                            imageUrl: currentUser.imageURL,
+                            imageUrl: currentUser.imageUrl,
                         }],
                 };
             });

@@ -11,6 +11,7 @@ import ServerError from "../../features/activities/dashboard/errors/ServerError"
 import LoginForm from "../../features/activities/dashboard/account/LoginForm";
 import RequireAuth from "./RequireAuth";
 import RegisterForm from "../../features/activities/dashboard/account/RegisterForm";
+import ProfilePage from "../../features/activities/dashboard/profiles/ProfilePage";
 
 
 export const router = createBrowserRouter([
@@ -25,6 +26,7 @@ export const router = createBrowserRouter([
             { path: 'createActivity', element: <ActivityForm key='create' /> }, //dodajmeo key da bi mogli da je otvorimo ako smo vec u edit formi
             { path: 'manage/:id', element: <ActivityForm /> }, //za editovanje forme
             { path: 'activities/:id', element: <ActivityDetailPage /> }, //activities/:id nam daje jednu activity
+             { path: 'profiles/:id', element: <ProfilePage /> }
 
             ]},
             { path: '', element: <HomePage /> }, // na http://localhost:3000/ ce biti homepage
