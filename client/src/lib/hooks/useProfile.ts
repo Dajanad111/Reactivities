@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import agent from "../api/agent.ts";
 import { useMemo } from "react";
 import type { Photo, Profile, User } from "../types/index";
+import type { EditProfileSchema } from "../schemas/editProfileSchema.ts";
 
 export const useProfile = (id?: string) => {
     const queryClient = useQueryClient();
@@ -88,7 +89,30 @@ export const useProfile = (id?: string) => {
             });
         }
     })
-
+    
+  const updateProfile = useMutation({  // Funkcija koja se izvršava kada pozovemo updateProfile
+        mutationFn: async (profile: EditProfileSchema) => {  
+            await agent.put(`/profiles`, profile); // Šaljemo podatke na server koristeći PUT metodu
+        }, // '/profiles' je adresa na backendu (gde smo pisali C# kod)  [HttpPut]  u kontroleru 
+        onSuccess: (_, profile) => {
+            queryClient.setQueryData(['profile', id], (data: Profile) => {
+                if (!data) return data;
+                return {
+                    ...data,     // Vrati stare podatke, ali ažuriraj ime i bio novim vrednostima
+                    displayName: profile.displayName,
+                    bio: profile.bio
+                }
+            });
+            queryClient.setQueryData(['user'], (userData: User) => {
+                if (!userData) return userData;
+                return {
+                    ...userData,
+                    displayName: profile.displayName
+                }
+            });
+        }
+       
+    });
     //provjeravamo da li je trenutni profil moj profil
     const isCurrentUser = useMemo(() => {  
       return id === queryClient.getQueryData<User>(['user'])?.id //je li id sa urla(profila koji gledas) isti kao id usera koji je ulogovan 
@@ -103,6 +127,7 @@ export const useProfile = (id?: string) => {
         isCurrentUser,
         uploadPhoto,
         setMainPhoto,
-        deletePhoto
+        deletePhoto,
+        updateProfile
     }
 }

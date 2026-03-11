@@ -1,4 +1,5 @@
 using System;
+using Application.Activities.Commands;
 using Application.Profiles.Commands;
 using Application.Profiles.DTOs;
 using Application.Profiles.Queries;
@@ -38,5 +39,11 @@ public class ProfilesController : BaseApiController
     public async Task<ActionResult<UserProfile>> GetProfile(string userId)
     {
         return HandleResult(await Mediator.Send(new GetProfile.Query {Id = userId }));
+    }
+
+    [HttpPut] //posto se kontroler zove profiles adresa ce biti '/profiles' jer nismo nista dodali
+    public async Task<ActionResult> UpdateProfile(EditProfile.Command command)
+    {
+        return HandleResult(await Mediator.Send(command));
     }
 }
