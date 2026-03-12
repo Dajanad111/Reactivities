@@ -13,7 +13,7 @@ public class MappingProfiles : Profile
         CreateMap<Activity, Activity>(); //mapiramo properties iz jedne activity u drugu(koju unosimo)
         CreateMap<CreateActivityDto, Activity>(); 
         CreateMap<EditActivityDto,Activity> ();
-         CreateMap<Activity, ActivityDto>()
+        CreateMap<Activity, ActivityDto>()
             .ForMember(d => d.HostId, o => o.MapFrom(s =>  //Za destinaciju HostId, uzmi vrijednost iz source-a po ovoj logici:
                 s.Attendees.FirstOrDefault(x => x.IsHost)!.User.Id)) //Nađi prvog clana koji je domaćin  i uzmi ID tog korisnika 
             .ForMember(d => d.HostDisplayName, o => o.MapFrom(s => 
@@ -25,6 +25,10 @@ public class MappingProfiles : Profile
             .ForMember(d => d.Bio, o => o.MapFrom(s => s.User.Bio))
             .ForMember(d => d.ImageUrl, o => o.MapFrom(s => s.User.ImageUrl));
         CreateMap<User, UserProfile>();  //kada korisnk zeli da dobije profil drugog korisnika
+         CreateMap<Comment, CommentDto>()  //pisemo pravila za polja koja zavise od usera ili activity 
+            .ForMember(d => d.DisplayName, o => o.MapFrom(s => s.User.DisplayName))
+            .ForMember(d => d.UserId, o => o.MapFrom(s => s.User.Id))
+            .ForMember(d => d.ImageUrl, o => o.MapFrom(s => s.User.ImageUrl));
     }
 }
 //treba dodati servis i u program.cs

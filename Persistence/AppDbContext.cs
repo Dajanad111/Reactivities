@@ -1,6 +1,7 @@
 using Domain;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Persistence;
 
@@ -10,6 +11,7 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
     public required DbSet<ActivityAttendee> ActivityAttendees { get; set; } //pravi tabelu activityattendees koja sadrzi ActivityAttendee
 
     public required DbSet<Photo> Photos { get; set; }
+    public required DbSet<Comment> Comments { get; set; }
     
     protected override void OnModelCreating(ModelBuilder builder) //govori Entity Framework Core-u kako da kreira i poveže tabele u bazi.
     {
@@ -29,5 +31,23 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
             .HasOne(x => x.Activity) //Svaki zapis u ActivityAttendees pripada tačno jednoj aktivnosti.
             .WithMany(x => x.Attendees) // ta aktivnost može imati mnogo učesnika (zapravo, mnogo zapisa u ovoj tabeli).
             .HasForeignKey(x => x.ActivityId); //Povezujemo ih preko kolone ActivityId 
+
+
+         var dateTimeConverter = new ValueConverter<DateTime, DateTime>(
+            v => v.ToUniversalTime(), // Convert to UTC before saving
+            v => DateTime.SpecifyKind(v, DateTimeKind.Utc) // Read as UTC
+        );
+
+        foreach (var entityType in builder.Model.GetEntityTypes())
+        {
+            foreach (var property in entityType.GetProperties())
+            {
+                if (property.ClrType == typeof(DateTime))
+                {
+                    property.SetValueConverter(dateTimeConverter);
+                }
+            }
+        }
+
     }
 }

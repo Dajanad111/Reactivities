@@ -60,7 +60,7 @@ export default function ActivityForm() {
             console.log(error);
         }
     }
-  
+
     
     if (isLoadingActivity) return <Typography>Loading activity...</Typography>;
 
@@ -82,7 +82,7 @@ export default function ActivityForm() {
 
                 <LocationInput control={control} label='Enter the location' name='location' />
                 <Box display='flex' justifyContent='end' gap='3'>
-                    <Button color='inherit'>Cancel</Button>
+                    <Button color='inherit'  onClick={() => navigate(-1)} >Cancel</Button>  {/*navigate -1 je da ase vrati jednu stranicu unazad*/}
                     <Button
                         type="submit"
                         color='success'

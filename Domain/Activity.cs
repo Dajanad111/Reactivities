@@ -21,4 +21,9 @@ public bool IsCancelled { get; set; }
   // navigation properties
     public ICollection<ActivityAttendee> Attendees { get; set; } = [];  //activity moze imati vise attendees
         //pravimo u appdbcontext pravilo kako da se povezu 
+    public ICollection<Comment> Comments {get; set;} = [] ;  //activity ima vise komentara 
+    // //pravimo u appdbcontext pravilo kako da se povezu 
+    //ne rpavimo kolekciju za usera i comments jer neced nigdje biti prikazani svi njegovi komentari na jednom mjestu 
+
+
 }
