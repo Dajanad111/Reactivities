@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import type { Photo, Profile, User } from "../types/index";
 import type { EditProfileSchema } from "../schemas/editProfileSchema.ts";
 
-export const useProfile = (id?: string) => {
+export const useProfile = (id?: string, predicate?: string) => {
     const queryClient = useQueryClient();
 
     const { data: profile, isLoading: loadingProfile } = useQuery<Profile>({
@@ -13,7 +13,7 @@ export const useProfile = (id?: string) => {
             const response = await agent.get<Profile>(`/profiles/${id}`); // [HttpGet("{userId}")]  PROFILECONTROLLER
             return response.data
         },
-        enabled: !!id
+        enabled: !!id && !predicate  //izvrsava se kad imamo id a nemamo predicate
     });
 
     const {data: photos, isLoading: loadingPhotos} = useQuery<Photo[]>({
@@ -22,8 +22,17 @@ export const useProfile = (id?: string) => {
             const response = await agent.get<Photo[]>(`/profiles/${id}/photos`);  //  [HttpGet("{userId}/photos")]
             return response.data
         },
-        enabled: !!id
+        enabled: !!id && !predicate
     });
+
+    const {data: followings, isLoading: loadingFollowings} = useQuery<Profile[]>({
+        queryKey: ['followings', id, predicate],
+        queryFn: async () => {
+            const response = await agent.get<Profile[]>(`/profiles/${id}/follow-list?predicate=${predicate}`);
+            return response.data
+        },
+        enabled: !!id && !!predicate
+    })
 
     const uploadPhoto = useMutation({ //useMutation - za slanje podataka
         mutationFn: async (file: Blob) => {
@@ -89,7 +98,9 @@ export const useProfile = (id?: string) => {
             });
         }
     })
-    
+ 
+
+
   const updateProfile = useMutation({  // Funkcija koja se izvršava kada pozovemo updateProfile
         mutationFn: async (profile: EditProfileSchema) => {  
             await agent.put(`/profiles`, profile); // Šaljemo podatke na server koristeći PUT metodu
@@ -113,6 +124,26 @@ export const useProfile = (id?: string) => {
         }
        
     });
+
+     const updateFollowing = useMutation({
+        mutationFn: async () => {
+            await agent.post(`/profiles/${id}/follow`)  //id je sa vrha   useProfile = (id?: string)
+        },
+        onSuccess: () => {
+            queryClient.setQueryData(['profile', id], (profile: Profile) => {
+                 queryClient.invalidateQueries({queryKey: ['followings', id, 'followers']});
+                if (!profile || profile.followersCount === undefined) return profile;
+                return {
+                    ...profile,
+                    following: !profile.following,
+                    followersCount: profile.following 
+                        ? profile.followersCount - 1 
+                        : profile.followersCount + 1
+                }
+            })
+        }
+    })
+
     //provjeravamo da li je trenutni profil moj profil
     const isCurrentUser = useMemo(() => {  
       return id === queryClient.getQueryData<User>(['user'])?.id //je li id sa urla(profila koji gledas) isti kao id usera koji je ulogovan 
@@ -128,6 +159,9 @@ export const useProfile = (id?: string) => {
         uploadPhoto,
         setMainPhoto,
         deletePhoto,
-        updateProfile
+        updateProfile,
+        updateFollowing,
+        followings,
+        loadingFollowings
     }
 }

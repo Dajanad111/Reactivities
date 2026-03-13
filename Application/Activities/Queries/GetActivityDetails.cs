@@ -1,6 +1,7 @@
 using System;
 using Application.Activities.DTOs;
 using Application.Core;
+using Application.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Domain;
@@ -17,12 +18,13 @@ public class GetActivityDetails
         public required string Id { get; set; } //property id da bi pronasli odredjenu activity
     }
 
-    public class Handler(AppDbContext context, IMapper mapper) : IRequestHandler<Query, Result<ActivityDto>>
+    public class Handler(AppDbContext context, IMapper mapper,IUserAccessor userAccessor) : IRequestHandler<Query, Result<ActivityDto>>
     {
         public async Task<Result<ActivityDto>> Handle(Query request, CancellationToken cancellationToken)//imamo query request
         {
             var activity = await context.Activities
-            .ProjectTo<ActivityDto> (mapper.ConfigurationProvider) //Baza vraća samo kolone koje trebaju za DTO
+            .ProjectTo<ActivityDto> (mapper.ConfigurationProvider ,  //Baza vraća samo kolone koje trebaju za DTO
+              new { currentUserId = userAccessor.GetUserId() })
             .FirstOrDefaultAsync(x => request.Id == x.Id, cancellationToken); //Traži prvi Activity čiji Id odgovara request.Id
             //Ako nađe → vraća taj Activity (sa učitanim Attendees i Users)
             if(activity==null) 

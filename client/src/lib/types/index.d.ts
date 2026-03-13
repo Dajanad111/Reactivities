@@ -9,7 +9,7 @@ type Activity = {
     venue: string
     latitude: number
     longitude: number
-    attendees: Profile []
+    attendees: Profile[]
     isGoing: boolean
     isHost: boolean
     hostId: string
@@ -23,6 +23,9 @@ type Profile = {
     displayName: string
     bio?: string
     imageUrl?: string
+    followersCount?: number
+    followingCount?: number
+    following?: boolean
 }
 type Photo = {
     id: string
@@ -45,7 +48,7 @@ type ChatComment = {
     imageUrl?: string;
 }
 
- export type LocationIQSuggestion = {
+export type LocationIQSuggestion = {
     place_id: string
     osm_id: string
     osm_type: string

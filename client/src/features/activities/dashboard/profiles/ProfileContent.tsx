@@ -3,6 +3,7 @@ import { type SyntheticEvent, useState } from "react";
 
 import ProfileAbout from "./ProfileAbout";
 import ProfilePhotos from "./ProfilePhotos";
+import ProfileFollowings from "./ProfileFollowings";
 
 
 export default function ProfileContent() {
@@ -16,8 +17,8 @@ export default function ProfileContent() {
         { label: 'About', content: <ProfileAbout /> },
         { label: 'Photos', content: <ProfilePhotos /> },
         { label: 'Events', content: <div>Events</div> },
-        { label: 'Followers', content: <div>Followers</div> },
-        { label: 'Following', content: <div>Following</div> }
+        { label: 'Followers', content: <ProfileFollowings activeTab={value} /> },
+        { label: 'Following', content: <ProfileFollowings activeTab={value} /> }
     ];
 
     return (
@@ -37,11 +38,11 @@ export default function ProfileContent() {
                 sx={{ borderRight: 1, height: 450, minWidth: 200 }}
             >
                 {tabContent.map((tab, index) => (  //prolazimo kroz sve tabove
-                    <Tab key={index} label={tab.label} sx={{mr: 3}} />
+                    <Tab key={index} label={tab.label} sx={{ mr: 3 }} />
                 ))}
             </Tabs>
             <Box sx={{ flexGrow: 1, p: 3, pt: 0 }}>  {/*da prikazemo sta je u tabu*/}
-                {tabContent[value].content} 
+                {tabContent[value].content}
             </Box>
         </Box>
     )
