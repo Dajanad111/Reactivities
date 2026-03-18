@@ -1,6 +1,9 @@
 using System;
+using Microsoft.EntityFrameworkCore;
 
 namespace Domain;
+
+[Index (nameof(Date))] //instrukcija za Entity Framework Core da u bazi podataka kreira indeks za kolonu Date.
 
 public class Activity
 {

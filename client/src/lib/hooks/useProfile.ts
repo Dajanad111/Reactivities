@@ -1,11 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import agent from "../api/agent.ts";
-import { useMemo } from "react";
-import type { Photo, Profile, User } from "../types/index";
+import { useMemo, useState } from "react";
+import type { Activity, Photo, Profile, User } from "../types/index";
 import type { EditProfileSchema } from "../schemas/editProfileSchema.ts";
 
 export const useProfile = (id?: string, predicate?: string) => {
     const queryClient = useQueryClient();
+      const [filter, setFilter] = useState<string | null>(null) //uvodimo filer za prikaz aktivnosti, default vrijednost null
 
     const { data: profile, isLoading: loadingProfile } = useQuery<Profile>({
         queryKey: ['profile', id],
@@ -25,14 +26,30 @@ export const useProfile = (id?: string, predicate?: string) => {
         enabled: !!id && !predicate
     });
 
+    
     const {data: followings, isLoading: loadingFollowings} = useQuery<Profile[]>({
         queryKey: ['followings', id, predicate],
         queryFn: async () => {
-            const response = await agent.get<Profile[]>(`/profiles/${id}/follow-list?predicate=${predicate}`);
+            const response = await agent.get<Profile[]>(`/profiles/${id}/follow-list?predicate=${predicate}`); //prosledjujemo i predicate
             return response.data
         },
         enabled: !!id && !!predicate
     })
+
+      const {data: userActivities, isLoading: loadingUserActivities} = useQuery({
+        queryKey: ['user-activities', filter], //znači da React Query automatski refreshuje podatke kad se filter promijeni
+        // /'user-activities' je  Ime/naziv ovog upita , a filter je promjenljiva vrijednost
+        queryFn: async () => {
+            const response = await agent.get<Activity[]>(`/profiles/${id}/activities`, {  //mora da se poklopi sa backendom  [HttpGet("{userId}/activities")]
+                params: { //prosledjujemo filter, na drugaciji nacin nego sto smo gore predicate
+                    filter   
+                }
+            });
+            return response.data
+        },
+        enabled: !!id && !!filter // Bez ovoga: Upit bi se izvršio čim se komponenta učita → greška jer nema filtera
+    });
+    
 
     const uploadPhoto = useMutation({ //useMutation - za slanje podataka
         mutationFn: async (file: Blob) => {
@@ -131,7 +148,7 @@ export const useProfile = (id?: string, predicate?: string) => {
         },
         onSuccess: () => {
             queryClient.setQueryData(['profile', id], (profile: Profile) => {
-                 queryClient.invalidateQueries({queryKey: ['followings', id, 'followers']});
+                queryClient.invalidateQueries({queryKey: ['followings', id, 'followers']});
                 if (!profile || profile.followersCount === undefined) return profile;
                 return {
                     ...profile,
@@ -162,6 +179,10 @@ export const useProfile = (id?: string, predicate?: string) => {
         updateProfile,
         updateFollowing,
         followings,
-        loadingFollowings
+        loadingFollowings,
+         userActivities,
+        loadingUserActivities,
+        setFilter,
+        filter
     }
 }

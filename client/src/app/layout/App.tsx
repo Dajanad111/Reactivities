@@ -17,7 +17,7 @@ function App() {
       {location.pathname === '/' ? <HomePage /> : (  // ako je path '/' prikazi pocetnu stranicu bez navbara
         <>
          <NavBar />  {/* Prikazuje navbar na vrhu */}
-      <Container maxWidth='xl' sx={{ margin: 3 }} > 
+      <Container maxWidth='xl' sx={{ pt: 12 }} > 
         <Outlet />   {/* Outlet = MESTO gde se renderuju child rute iz routes.tsx ... ako je URL /activities → renderuje <ActivitiesList />*/}
       </Container>
         </>
