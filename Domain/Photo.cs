@@ -12,8 +12,8 @@ public class Photo
     // navigation properties
     public required string UserId { get; set; }  //fk
 
-    [JsonIgnore]  //Kada pretvaraš ovaj objekat u JSON (za slanje klijentu), POTPUNO preskoči ovo polje.
-    //jer ako udje u njega opet ce dodati sliku i tako u nedogled
-    // /Prekida petlju – User se ne šalje unutar Photo
+    [JsonIgnore]  //kada bi serializer pravio JSON od Photo, ušao bi u User,
+    //  koji ima Photos, koji ima User... i tako u nedogled – beskonačna petlja. 
+    // [JsonIgnore] prekida tu petlju.
     public User User { get; set; } = null!;
 }

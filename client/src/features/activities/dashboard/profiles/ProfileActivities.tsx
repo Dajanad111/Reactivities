@@ -28,7 +28,8 @@ export default function ProfileActivities() {
 
     return (
         <Box>
-            <Grid container spacing={2}>
+
+            <Grid container spacing={2}> 
                 <Grid size={12}>
                     <Tabs   //prikaz tabova
                         value={activeTab} //koji tab je aktivan
@@ -40,22 +41,24 @@ export default function ProfileActivities() {
                     </Tabs>
                 </Grid>
             </Grid>
-            {(!userActivities || userActivities.length === 0) 
-			            && !loadingUserActivities ? (
-                <Typography mt={2}>
-                    No activities to show
+
+            {(!userActivities || userActivities.length === 0)  //ako nema podataka (userActivities iz useprofile)
+			            && !loadingUserActivities ? ( // i ako  nije u toku učitavanje
+                <Typography mt={2}> 
+                    No activities to show 
                 </Typography>
             ) : null}
-            <Grid 
+
+            <Grid  //Prikaz kartica sa eventima
 	            container 
 		           spacing={2} 
 		           sx={{ marginTop: 2, height: 400, overflow: 'auto' }}
             >
-                {userActivities && userActivities.map((activity: Activity) => (
-                    <Grid size={2} key={activity.id}>
-                        <Link to={`/activities/${activity.id}`} 
+                {userActivities && userActivities.map((activity: Activity) => ( //ako imamo data onda za svaki element u nizu izvrši funkciju i vrati novi niz elemenata
+                    <Grid size={2} key={activity.id}>  {/*svaki element u .map() mora imati jedinstveni key */}
+                        <Link to={`/activities/${activity.id}`} //da mozes da kliknes na njih i da te vodi na activity
 			                        style={{ textDecoration: 'none' }}>
-                            <Card elevation={4}>
+                            <Card elevation={4}> {/*kartica" kontejner sa bijelom pozadinom, zaobljenim uglovima i sjénkom */}
                                 <CardMedia
                                     component="img"
                                     height="100"

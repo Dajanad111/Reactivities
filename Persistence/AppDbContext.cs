@@ -24,7 +24,7 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
 
         //User (1) ────────< (M) ActivityAttendee
         builder.Entity<ActivityAttendee>()
-            .HasOne(x => x.User)           // svaki zapis u tabeli ActivityAttendees pokazuje na tačno jednog korisnika (HasOne
+            .HasOne(x => x.User)           // ActivityAttendee ima jednog User-a
             .WithMany(x => x.Activities)   // User može imati MNOGO Activity zapisa
             .HasForeignKey(x => x.UserId); //  "strani ključ" je  UserId!
 

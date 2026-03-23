@@ -3,9 +3,10 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Domain;
 
-public class User : IdentityUser
+public class User : IdentityUser //IdentityUser je klasa iz ASP.NET Core Identity biblioteke.
+//  Ona već ima: Id, Email, UserName, PasswordHash, PhoneNumber
 {
-    public string? DisplayName { get; set; }
+    public string? DisplayName { get; set; }  //ova polja dodajemo 
     public string? Bio { get; set; }
     public string? ImageUrl { get; set; }
 
@@ -16,8 +17,8 @@ public class User : IdentityUser
 
     //pravimo u appdbcontext pravilo kako da se povezu 
 
-    public ICollection<UserFollowing> Followings { get; set; } = [];
-    public ICollection<UserFollowing> Followers { get; set; } = [];
+    public ICollection<UserFollowing> Followings { get; set; } = [];  //koga prati
+    public ICollection<UserFollowing> Followers { get; set; } = []; //ko prati njega
 
 
 

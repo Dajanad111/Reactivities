@@ -25,27 +25,28 @@ public class GetUserActivities
     {
         public async Task<Result<List<UserActivityDto>>> Handle(Query request, CancellationToken cancellationToken)
         {
-              var query = context.ActivityAttendees
-                .Where(u => u.User.Id == request.UserId)
-                .OrderBy(a => a.Activity.Date)
-                .Select(x => x.Activity)
+              var query = context.ActivityAttendees  //  Počinjemo sa svim aktivnostima gdje je korisnik attendee
+                .Where(u => u.User.Id == request.UserId)  //pronadji u ActivityAttendees sve vezano za ovog usera
+                .OrderBy(a => a.Activity.Date) //poredjaj po datumu aktivnosti
+                .Select(x => x.Activity) //selektuj samo aktivnosti 
                 .AsQueryable();
 
-                var today = DateTime.UtcNow;
+                var today = DateTime.UtcNow;  //danasnji datum 
 
-                 query = request.Filter switch
+                 query = request.Filter switch  
             {
-                "past" => query.Where(a => a.Date <= today 
-                    && a.Attendees.Any(x => x.UserId == request.UserId)),
-                "hosting" => query.Where(a => a.Attendees.Any(x => x.IsHost 
-		                && x.UserId == request.UserId)),
-                _ => query.Where(a => a.Date >= today 
+                "past" => query.Where(a => a.Date <= today  //alko je filter past daj sve aktivnosti manjeg datuma od danas 
+                    && a.Attendees.Any(x => x.UserId == request.UserId)), // i gdje je attendee nas user 
+                "hosting" => query.Where(a => a.Attendees.Any(x => x.IsHost  //ako je filtere hosting daj svve gdje je ovaj user host 
+		                && x.UserId == request.UserId)), 
+                _ => query.Where(a => a.Date >= today //ostalo je za buduce akcije 
                     && a.Attendees.Any(x => x.UserId == request.UserId))
             };
+            
              var projectedActivities = query
-                .ProjectTo<UserActivityDto>(mapper.ConfigurationProvider);
-            var activities = await projectedActivities.ToListAsync(cancellationToken);
-            return Result<List<UserActivityDto>>.Success(activities);
+                .ProjectTo<UserActivityDto>(mapper.ConfigurationProvider); //Definiši šta želiš (samo određena polja).
+            var activities = await projectedActivities.ToListAsync(cancellationToken); //Izvuci to iz baze (executaj upit).
+            return Result<List<UserActivityDto>>.Success(activities); //Spakuj i vrati (standardizovani odgovor).
     }
 }
 }

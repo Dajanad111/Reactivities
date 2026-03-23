@@ -5,7 +5,7 @@ namespace Domain;
 public class UserFollowing
 {
     public required string ObserverId { get; set; }
-    public User Observer { get; set; } = null!; //Follower
+    public User Observer { get; set; } = null!; //Follower , ko prati
     public required string TargetId { get; set; }
-    public User Target { get; set; } = null!; //Followee
+    public User Target { get; set; } = null!; //Followee , koga prate
 }
