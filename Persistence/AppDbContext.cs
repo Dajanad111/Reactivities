@@ -45,7 +45,7 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
         b.HasOne(t => t.Target)   // Target (koga prate)
             .WithMany(f => f.Followers)       // User ima MNOGO pratilaca
             .HasForeignKey(t => t.TargetId)   // Strani ključ je TargetId
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.NoAction);
     });
 
 

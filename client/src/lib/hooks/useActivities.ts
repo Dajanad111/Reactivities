@@ -28,7 +28,6 @@ export const useActivities = (id?: string) => { //optional prop id, jer za activ
             }) // Šalje GET zahtjev na API endpoint i dobija odgovor kao Activity[]
             return response.data;   // Vraća samo podatke iz odgovora (response.data)
         },
-        staleTime: 1000 * 60 * 5, //svakih 5min provjeravaj da li su se pojavile nove aktivnosti da se ne bi stalno refreshovao 
         placeholderData: keepPreviousData, //cuva prethodne podatke , dok ne moramo da ucitamo ensto novo
         initialPageParam: null,
         getNextPageParam: (lastPage) => lastPage.nextCursor, // nextcursor koji backend salje za trenutnu stranicu (lastpage)
@@ -75,11 +74,11 @@ export const useActivities = (id?: string) => { //optional prop id, jer za activ
     const updateActivity = useMutation({ // useMutation kada MODIFIKUJEMO podatke (POST, PUT, DELETE), updateActivity je metod
         // mutationFn - funkcija koja izvršava API poziv za izmenu podataka
         mutationFn: async (activity: Activity) => {  // activity: Activity - parametar koji prima funkcija (Activity objekat koji želimo da ažuriramo)
-            await agent.put('/activities/${activity.id}', activity);    // Šalje PUT zahtjev na API endpoint '/activities', PUT metoda se koristi za ažuriranje postojećih podataka
+            await agent.put(`/activities/${activity.id}`, activity);    // Šalje PUT zahtjev na API endpoint '/activities', PUT metoda se koristi za ažuriranje postojećih podataka
         },
         onSuccess: async () => {  // onSuccess - callback funkcija koja se izvršava NAKON uspješne mutacije
             await queryClient.invalidateQueries({  // briše cache za određeni query, Ovo će automatski triggerovati ponovno učitavanje podataka
-                queryKey: ['activities']  //Brišemo cache za query sa ključem ['activities']
+                queryKey: ['activities', activity?.id]  //Brišemo cache za query sa ključem ['activities']
             })
         }
     });

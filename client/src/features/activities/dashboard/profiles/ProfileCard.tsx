@@ -35,7 +35,6 @@ export default function ProfileCard({ profile }: Props) {
                         {profile.following &&
                             <Chip size='small' label='Following' color="secondary" variant="outlined" />}
                     </Box>
-
                 </CardContent>
                 <Divider sx={{ mb: 2 }} />
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'start' }}>

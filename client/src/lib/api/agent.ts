@@ -22,13 +22,14 @@ agent.interceptors.request.use(config => {//  Pokaži loading spinner (korisnik 
 // dodaje interceptor koji hvata sve odgovore od servera 
 agent.interceptors.response.use( //async response => - asinhrona funkcija koja prima odgovor od servera
     async response => { //async response => - asinhrona funkcija koja prima odgovor od servera    //USPEŠAN ODGOVOR (200-299 status kodovi)
+        if(import.meta.env.DEV)  //ako nismo u produkciji onda
         await sleep(1000); //čeka 1 sekundu (1000 milisekundi) pre nego što prosledi odgovor dalje
         store.uiStore.isIdle()  // Sakrij loading spinner
         return response; //vraća originalni odgovor nakon kašnjenja
     },
    
     async error => { // GREŠKA (400, 404, 500... status kodovi)
-        await sleep(1000); 
+         if(import.meta.env.DEV)  await sleep(1000); 
         store.uiStore.isIdle(); 
         const { status,data } = error.response; // Izvuci podatke iz greške
         switch (status) {    //  Reagiraj različito za različite status kodove
