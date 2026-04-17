@@ -48,9 +48,12 @@ agent.interceptors.response.use( //async response => - asinhrona funkcija koja p
                 
                 break;
             case 401:
-                toast.error('unauthorised');
-                break;
-
+                 if (data.detail === 'NotAllowed') {
+                    throw new Error(data.detail)
+                } else {
+                    toast.error('Unauthorised');
+                }
+                 break;
             case 404:
                 router.navigate('/not-found')
                 break;

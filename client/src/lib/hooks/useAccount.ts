@@ -37,10 +37,7 @@ export const useAccount = () => {
             await agent.post('/account/register', creds);         // Šaljemo POST zahtev na endpoint '/account/register' sa podacima iz forme
         // Server će kreirati novog korisnika u bazi i vratiti odgovor
         },
-        onSuccess: async () => {    // onSuccess se izvršava AKO je server vratio 200/201 (uspešno kreiran nalog)
-            toast.success('Register successful - you can now login');  // Prikazujemo korisniku obaveštenje da je registracija uspešna
-            navigate('/login');
-        }
+        
     })
 
     const logoutUser = useMutation({
@@ -51,6 +48,25 @@ export const useAccount = () => {
             queryClient.removeQueries({queryKey: ['user']}); //mice ucitanog usera
              queryClient.removeQueries({queryKey: ['activities']}); //ukloni ucitane aktivnosti nakon sto se izlogujes
             navigate('/');  //predji na pocetnu stranu
+        }
+    })
+
+     const verifyEmail = useMutation({
+        mutationFn: async ({ userId, code }: {userId: string, code: string}) => {
+            await agent.get(`/confirmEmail?userId=${userId}&code=${code}`);
+        }
+    });
+
+    const resendConfirmationEmail = useMutation({
+        mutationFn: async ({email, userId} :{email?: string, userId?: string | null}) => {
+            await agent.get(`/account/resendConfirmEmail`, {
+                params: { 
+                    email,
+                    userId }
+            });
+        },
+        onSuccess: () => {
+            toast.success('Email sent - please check your inbox');
         }
     })
 
@@ -69,6 +85,8 @@ export const useAccount = () => {
         currentUser,
         logoutUser,
         loadingUserInfo,
-        registerUser
+        registerUser,
+        resendConfirmationEmail,
+        verifyEmail
     }
 }
